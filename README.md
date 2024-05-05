@@ -19,6 +19,19 @@ The packaged Ruffle files are been built with changes to allow AS2 games to func
 The sidebar is built to `www/sidebar.js` and `www/sidebar.css`, it can be included on a page and loaded with `loadGameSidebar(<elemId>);` as long as it's loaded after `api.js`. 
 It will display associated data such as game stats and badge statuses. This is not required for KongLib to function and you're free to write your elements to display this info on a page.
 
+## Development
+
+See `setup` for setting up useful local files.
+
+Install deps
+`npm install`
+
+Build:
+`npm run build`
+
+Run dev server:
+`npm run dev`
+
 ## Flash API Modifications
 
 Modify using JPEXS
