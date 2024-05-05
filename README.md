@@ -1,4 +1,4 @@
-# Kongregate API Reimplementation
+# KongLib
 
 Designed to replace the existing Kongregate JS API and allow integration with the Flash API. Modern HTML game compatability is not a goal of the project. It's built to be slim, without external dependencies. (This may change if other Connection implementations are added in the future)
 
