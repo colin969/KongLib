@@ -1,0 +1,29 @@
+html {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+#wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+}
+
+#info {
+    white-space: pre;
+    padding: 10px;
+}
+
+#container {
+    margin: auto;
+    margin-top: 0;
+}
+
+#sidebar {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 1rem;
+    min-width: 30%;
+    max-width: 30%;
+}

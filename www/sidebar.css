@@ -1,0 +1,109 @@
+.konglib-sidebar-header {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid black;
+}
+
+.konglib-sidebar-header  > :not(:first-child) {
+    margin-left: 0.5rem;
+}
+
+.konglib-sidebar-loadstate {
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0.8rem;
+    padding-top: 0.2rem;
+    padding-right: 0.75rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.75rem;
+}
+
+.konglib-sidebar-loadstate--ready {
+    background-color: green;
+}
+
+.konglib-sidebar-loadstate--waiting {
+    background-color: orange;
+}
+
+.konglib-sidebar-loadstate--missing {
+    background-color: darkred;
+}
+
+.konglib-sidebar-content-badges > :not(:first-child) {
+    margin-top: 1rem;
+}
+
+.konglib-sidebar-achievement-row--upper {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.25rem;
+    font-weight: bold;
+    align-items: center;
+}
+
+.konglib-sidebar-achievement-row--icon {
+    width: 36px;
+    height: 36px;
+    border: 3px solid black;
+    border-radius: 3px;
+    margin-right: 0.2rem;
+}
+
+.konglib-sidebar-achievement-row--icon-locked {
+    opacity: 0.6;
+}
+
+.konglib-sidebar-achievement-row--icon-unlocked {
+    border-color: gold;
+}
+
+.konglib-sidebar-achievement-row--icon-locked-symbol {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    background-size: cover;
+    opacity: 0.9;
+    z-index: 10;
+    margin-left: 3px;
+  }
+
+
+.konglib-sidebar-achievement-row--points {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.konglib-sidebar-achievement-row--desc {
+    margin-bottom: 0.4rem;
+}
+
+.konglib-stats-table {
+    table-layout: fixed;
+    font-size: 1.2em;
+    font-family: monospace;
+}
+
+.konglib-stats-table td {
+    text-align: left;
+    padding-right: 0.5rem;
+    white-space: nowrap;
+}
+
+.konglib-stats-table tr:nth-child(even) {
+    background-color: #eae9e9;
+}
+
+.konglib-stats-table th {
+    text-align: left;
+}
+
+.konglib-stats-row--name {
+    white-space: unset !important;
+}
+
+.konglib-spacer {
+    flex-grow: 1;
+}

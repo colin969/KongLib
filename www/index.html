@@ -1,0 +1,192 @@
+<html>
+    <head>
+        <title>KongLib Flash Game Browser</title>
+        <script type="text/javascript" src="./api.js"></script>
+        <script type="text/javascript" src="./sidebar.js"></script>
+        <script src="./ruffle/ruffle.js"></script>
+        <link rel="stylesheet" href="./style.css">
+        <link rel="stylesheet" href="./sidebar.css">
+        <script>
+            const _fetch = window.fetch;
+            
+            let dropdownValues = [];
+            let badges = null;
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                const gameIdInfo = await kongregateAPI.getGameIdInfo();
+                gameIdInfo.sort(function (a,b) { return a.name.toLowerCase() > b.name.toLowerCase() }); // Sort dropdown options
+                const dropdown = document.getElementById('loader-game-select');
+                dropdown.innerHTML = '';
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.text = 'Select a game';
+                dropdown.appendChild(placeholder);
+
+                gameIdInfo.forEach(game => {
+                    const option = document.createElement('option');
+                    option.value = game.game_id;
+                    option.text = `${game.name} - (${game.avm === "Avm2" ? "AS 3": "AS 2"})`;
+                    dropdown.appendChild(option);
+                });
+
+                // Event listener to update other fields based on the selected game
+                dropdown.addEventListener('change', function() {
+                    // Find the selected game data based on the dropdown's value
+                    const selectedGame = gameIdInfo.find(game => game.game_id.toString() === this.value);
+                    if (!selectedGame) {
+                        return;
+                    }
+
+                    // Update the game ID input field
+                    const gameIdInput = document.getElementById('loader-game-id');
+                    gameIdInput.value = selectedGame ? selectedGame.game_id.toString() : '';
+
+                    // Update the game PATH input field
+                    const gamePathInput = document.getElementById('loader-game-path');
+                    gamePathInput.value = selectedGame ? './files' + selectedGame.game_path + '/' + selectedGame.swf_filename : '';
+
+                    // Update the AS3 checkbox
+                    const gameAs3Checkbox = document.getElementById('loader-game-as3');
+                    gameAs3Checkbox.checked = selectedGame ? selectedGame.avm === "Avm2" : false;
+
+                    loadGame();
+                });
+            });
+
+            window.fetch = async (resource, options) => {
+                // Get request as URL object
+                let resourceURL = new URL(resource instanceof Request ? resource.url : resource);
+                
+                let originalUrl = resourceURL.href;
+                let response = null
+                if (resourceURL.toString().includes("kongregate.com")) {
+                    console.log(`Redirected ${originalUrl}`);
+                    const redirect = new URL('./' + resourceURL.pathname, window.location.href);
+                    response = await _fetch(redirect, options);
+                } else {
+                    return await _fetch(resource, options);
+                }                
+
+                // Spoof URL to bypass sitelocks
+                Object.defineProperty(response, 'url', { value: originalUrl });
+                
+                return response;
+            };
+            
+            async function loadGame() {
+                // Get id and path from inputs
+                const gameId = document.getElementById('loader-game-id').value;
+                const isAs3 = document.getElementById('loader-game-as3').checked;
+                let gamePath = document.getElementById('loader-game-path').value;
+                if (gamePath === "") {
+                    gamePath = (new URL("./game/game.swf", window.location.href));
+                } else if (gamePath.startsWith("./")) {
+                    gamePath = (new URL(gamePath, "http://kongregate.com"));
+                }
+                gamePath.host = "kongregate.com";
+
+                // Get the game metadata by id
+                const metaRes = await _fetch(`./static/game_info/${gameId}.json`);
+                const meta = await metaRes.json();
+
+                // Load badge data
+                if (!badges) {
+                    const badgeRes = await _fetch('./static/badges.json');
+                    const badges = await badgeRes.json();
+                    kongregate.loadBadgeInfo(badges);
+                }
+
+                // Load game info
+                kongregate.loadGameInfo(meta);
+
+                // Load sidebar
+                loadGameSidebar('sidebar');
+
+                // Load info panel
+                const panel = document.getElementById('info');
+                panel.textContent = JSON.stringify(meta, null, 2);
+
+                if (gamePath.href.endsWith(".swf")) {
+                    window.RufflePlayer = window.RufflePlayer || {};
+
+                    const ruffle = window.RufflePlayer.newest();
+                    const player = ruffle.createPlayer();
+                    player.style.width = `${meta.html_dimensions.game_width}`;
+                    player.style.height = `${meta.html_dimensions.game_height}`;
+                    player.id = "gamediv"; // Ruffle fails to read element, force gamediv
+                    player.config.base = "http://chat.kongreate.com" + meta.game_path;
+                    console.log(`Player Base: ${player.config.base}`);
+                    player.traceObserver = (msg) => console.debug('captured');
+                    const container = document.getElementById("container");
+                    container.innerHTML = '';
+                    container.appendChild(player);
+
+                    if (isAs3) {
+                        const apiPath = (new URL('./API_AS3_MODIFIED.swf', window.location.href)).href;
+                        player.load({
+                            url: gamePath.href,
+                            allowScriptAccess: true,
+                            logLevel: "debug",
+                            parameters: {
+                                "kongregate": "true",
+                                "kongregate_game_id": gameId.toString(),
+                                "kongregate_user_id": "",
+                                "kongregate_username": "",
+                                "kongregate_flash_postmessage": "true",
+                                "kongregate_api_path": apiPath,
+                                "api_path": apiPath,
+                                "debug_level": "4",
+                                "kongregate_debug_level": "4",
+                            },
+                        });
+                    } else {
+                        gamePath.host = "chat.kongregate.com";
+                        player.load({
+                            url: "http://kongregate.com/API_AS2_MODIFIED.swf",
+                            allowScriptAccess: true,
+                            logLevel: "debug",
+                            wmode: "direct",
+                            allowNetworking: "all",
+                            parameters: {
+                                "kongregate": "true",
+                                "kongregate_game_id": gameId.toString(),
+                                "kongregate_user_id": "",
+                                "kongregate_username": "",
+                                "kongregate_flash_postmessage": "true",
+                                "debug_level": "4",
+                                "kongregate_debug_level": "4",
+                                "game_swf": gamePath.href,
+                            },
+                        });
+                    }
+
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>KongLib Flash Game Browser</h1>
+        <div>
+            <b>SELECT GAME:</b>
+            <select id="loader-game-select"></select>
+            <b>ID:</b>
+            <input id="loader-game-id" list="game-ids">
+            <b>PATH:</b>
+            <input id="loader-game-path" list="game-paths">
+            <b>AS3:</b>
+            <input type="checkbox" id="loader-game-as3" checked>
+            <button onclick="loadGame()">Load Game</button>
+        </div>
+        <div id="wrapper">
+            <div id="container">
+
+            </div>
+            <div id="sidebar">
+
+            </div>
+        </div>
+        <div id="info">
+
+        </div>
+    </body>
+</html>

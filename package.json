@@ -1,0 +1,19 @@
+{
+  "name": "konglib",
+  "version": "1.0.0",
+  "description": "A reimplementation of the Kongregate JS API, along with modifications designed to interface with the Flash API. Not designed for modern HTML games.",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild --bundle ./src/index.ts --outfile=./www/api.js && esbuild --bundle ./src/sidebar.ts --outfile=./www/sidebar.js",
+    "watch": "concurrently esbuild --bundle ./src/index.ts --outfile=./www/api.js --watch & esbuild --bundle ./src/sidebar.ts --outfile=./www/sidebar.js --watch",
+    "dev": "concurrently \"esbuild --bundle ./src/sidebar.ts --outfile=./www/sidebar.js --watch\" \"esbuild --bundle ./src/index.ts --outfile=./www/api.js --watch --servedir=./www\""
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "esbuild": "0.20.2",
+    "esbuild-plugin-tsc": "0.4.0",
+    "typescript": "5.4.5"
+  }
+}
