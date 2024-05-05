@@ -106,7 +106,8 @@ export class StatsModule extends ApiEventManager implements IStatsModule {
                 const stat = this.stats.find(s => s.id === task.statistic_id);
                 if (stat) {
                     // Check if condition met
-                    if (stat.value >= task.quota) {
+                    const quotaMet = stat.stat_type === 'MIN' ? stat.value <= task.quota : stat.value >= task.quota;
+                    if (quotaMet) {
                         if (task.operator === 'OR') {
                             // Only required one to match, unlock
                             ach.unlocked = true;
