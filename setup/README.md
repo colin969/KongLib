@@ -20,8 +20,6 @@ Run the scripts in order:
 `4_avmdata.py` - **Requires Ruffle repo set up, modify the paths at the top of the file. See their repo for details.** - Adds the required Avm1 / Avm2 flag to each from filtered_pairs.json into finished_pairs.json
 
 
-Copy `badges.json` to `../www/static/badges.json`
-
 Copy the resulting `processed` folder to `../www/static/game_info`
 
 Copy the resulting `finished_pairs.json` to `../www/game_info.json`
